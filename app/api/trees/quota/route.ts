@@ -6,18 +6,18 @@ const WAI_BASE = "https://api.weather-ai.co"
 export async function GET() {
   let res: Response
   try {
-    res = await fetch(`${WAI_BASE}/v1/usage`, {
+    res = await fetch(`${WAI_BASE}/v1/trees/quota`, {
       headers: { Authorization: `Bearer ${process.env.WEATHER_AI_API_KEY}` },
       next: { revalidate: 60 },
     })
   } catch {
-    return NextResponse.json({ error: "Failed to reach usage service", code: "unavailable" }, { status: 503 })
+    return NextResponse.json({ error: "Failed to reach analysis service", code: "unavailable" }, { status: 503 })
   }
 
   const body = await res.json()
   if (!res.ok) {
     const err = parseApiError(res.status, body, res.headers)
-    return NextResponse.json({ error: err.message, code: err.code, retryAfter: err.retryAfter }, { status: res.status })
+    return NextResponse.json({ error: err.message, code: err.code }, { status: res.status })
   }
   return NextResponse.json(body)
 }

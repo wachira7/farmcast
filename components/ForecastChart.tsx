@@ -1,15 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-} from "recharts"
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts"
 import type { DailyForecast } from "@/types/weather"
 import { dayAbbr, wmoLabel } from "@/lib/utils"
 

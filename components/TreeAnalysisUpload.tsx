@@ -1,17 +1,25 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Upload, TreePine, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react"
 import type { TreeAnalysisResult } from "@/types/weather"
 import { analyzeTrees } from "@/lib/weather-api"
+import { getProfile, type FarmerProfile } from "@/lib/profile"
 import Image from "next/image"
 
-export default function TreeAnalysisUpload() {
+interface Props {
+  onAnalysisComplete?: (result: TreeAnalysisResult) => void
+}
+
+export default function TreeAnalysisUpload({ onAnalysisComplete }: Props) {
   const [result, setResult] = useState<TreeAnalysisResult | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [profile, setProfile] = useState<FarmerProfile | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => { setProfile(getProfile()) }, [])
 
   async function handleFile(file: File) {
     setError(null)
@@ -20,14 +28,21 @@ export default function TreeAnalysisUpload() {
 
     const fd = new FormData()
     fd.append("image", file)
-    fd.append("county", "Bomet")
+    if (profile?.county) fd.append("county", profile.county)
+    if (profile?.farmName) fd.append("location", profile.farmName)
+    if (profile?.name) fd.append("farmerId", profile.name)
 
     setLoading(true)
     try {
       const data = await analyzeTrees(fd)
       setResult(data)
+      onAnalysisComplete?.(data)
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Analysis failed")
+      if (e instanceof Error) {
+        try { setError(JSON.parse(e.message).error) } catch { setError(e.message) }
+      } else {
+        setError("Analysis failed")
+      }
     } finally {
       setLoading(false)
     }

@@ -103,3 +103,45 @@ export interface TreeAnalysisResult {
   original_image_url: string
   overlay_image_url: string
 }
+
+export interface TreesQuotaResponse {
+  plan: string
+  used: number
+  limit: number
+  remaining: number
+  unlimited: boolean
+  resets_at: string
+}
+
+export interface TreeAnalysisSummary {
+  analysis_id: string
+  timestamp: string
+  total_tree_count: number
+  canopy_coverage_pct: number
+  confidence_score: number
+  county?: string
+  location?: string
+  overlay_image_url?: string
+}
+
+export interface TreesHistoryResponse {
+  analyses: TreeAnalysisSummary[]
+  next_cursor: string | null
+}
+
+export interface GeoWeatherResponse extends WeatherResponse {
+  client_geo?: {
+    ip: string
+    city?: string
+    region?: string
+    country?: string
+    lat?: number
+    lon?: number
+  }
+}
+
+export interface CurrentResponse {
+  location: WeatherLocation
+  current: CurrentWeather
+  hourly: HourlyForecast[]
+}

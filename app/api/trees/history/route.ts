@@ -3,20 +3,17 @@ import { parseApiError } from "@/lib/errors"
 
 const WAI_BASE = "https://api.weather-ai.co"
 
-export async function POST(req: NextRequest) {
-  let formData: FormData
-  try {
-    formData = await req.formData()
-  } catch {
-    return NextResponse.json({ error: "Invalid form data" }, { status: 400 })
-  }
+export async function GET(req: NextRequest) {
+  const cursor = req.nextUrl.searchParams.get("cursor")
+  const url = cursor
+    ? `${WAI_BASE}/v1/trees/history?cursor=${cursor}`
+    : `${WAI_BASE}/v1/trees/history`
 
   let res: Response
   try {
-    res = await fetch(`${WAI_BASE}/v1/trees/analyze`, {
-      method: "POST",
+    res = await fetch(url, {
       headers: { Authorization: `Bearer ${process.env.WEATHER_AI_API_KEY}` },
-      body: formData,
+      next: { revalidate: 30 },
     })
   } catch {
     return NextResponse.json({ error: "Failed to reach analysis service", code: "unavailable" }, { status: 503 })
@@ -25,7 +22,7 @@ export async function POST(req: NextRequest) {
   const body = await res.json()
   if (!res.ok) {
     const err = parseApiError(res.status, body, res.headers)
-    return NextResponse.json({ error: err.message, code: err.code, retryAfter: err.retryAfter }, { status: res.status })
+    return NextResponse.json({ error: err.message, code: err.code }, { status: res.status })
   }
   return NextResponse.json(body)
 }

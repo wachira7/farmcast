@@ -1,16 +1,28 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, TreePine, Info } from "lucide-react"
 import TreeAnalysisUpload from "@/components/TreeAnalysisUpload"
+import TreesQuotaBar from "@/components/TreesQuotaBar"
+import TreesHistory from "@/components/TreesHistory"
+import { getTreesQuota, getTreesHistory } from "@/lib/weather-api"
+import type { TreesQuotaResponse, TreeAnalysisSummary } from "@/types/weather"
 
 function FarmAnalysisContent() {
   const params = useSearchParams()
   const lat = params.get("lat")
   const lon = params.get("lon")
   const name = params.get("name") ?? "your farm"
+
+  const [quota, setQuota] = useState<TreesQuotaResponse | null>(null)
+  const [analyses, setAnalyses] = useState<TreeAnalysisSummary[]>([])
+
+  useEffect(() => {
+    getTreesQuota().then(setQuota).catch(() => {})
+    getTreesHistory().then((r) => setAnalyses(r.analyses)).catch(() => {})
+  }, [])
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6 px-4 py-6">
@@ -41,6 +53,9 @@ function FarmAnalysisContent() {
         </p>
       </div>
 
+      {/* Quota */}
+      {quota && <TreesQuotaBar data={quota} />}
+
       {/* Info note */}
       <div className="flex items-start gap-2 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700 dark:border-blue-900 dark:bg-blue-950/20 dark:text-blue-300">
         <Info className="h-4 w-4 mt-0.5 shrink-0" />
@@ -50,7 +65,13 @@ function FarmAnalysisContent() {
         </span>
       </div>
 
-      <TreeAnalysisUpload />
+      <TreeAnalysisUpload onAnalysisComplete={(a) => setAnalyses((prev) => [a, ...prev])} />
+
+      {/* History */}
+      <div>
+        <h2 className="mb-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300">Analysis History</h2>
+        <TreesHistory analyses={analyses} />
+      </div>
     </div>
   )
 }

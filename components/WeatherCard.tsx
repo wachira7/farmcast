@@ -1,19 +1,33 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Wind, Droplets, Thermometer } from "lucide-react"
 import type { WeatherResponse } from "@/types/weather"
 import { formatTemp, wmoLabel } from "@/lib/utils"
+import { getProfile } from "@/lib/profile"
 
 interface Props {
   data: WeatherResponse
   locationName: string
 }
 
+function greeting(): string {
+  const h = new Date().getHours()
+  if (h < 12) return "Good morning"
+  if (h < 17) return "Good afternoon"
+  return "Good evening"
+}
+
 export default function WeatherCard({ data, locationName }: Props) {
   const { current, location, hourly } = data
+  const [farmerName, setFarmerName] = useState<string | null>(null)
 
-  // Grab humidity / feels_like from the current hour's hourly entry
+  useEffect(() => {
+    const p = getProfile()
+    if (p?.name) setFarmerName(p.name)
+  }, [])
+
   const now = new Date().getHours()
   const currentHour = hourly.find((h) => new Date(h.time).getHours() === now) ?? hourly[0]
 
@@ -21,6 +35,9 @@ export default function WeatherCard({ data, locationName }: Props) {
     <div className="rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 p-6 text-white shadow-xl">
       <div className="mb-4 flex items-start justify-between">
         <div>
+          {farmerName && (
+            <p className="text-sm text-emerald-200 mb-0.5">{greeting()}, {farmerName}</p>
+          )}
           <p className="text-sm font-medium text-emerald-100 uppercase tracking-wider">Current Weather</p>
           <h2 className="mt-1 text-2xl font-bold">{locationName}</h2>
           <p className="text-emerald-200 text-sm">{location.country} · {location.timezone}</p>

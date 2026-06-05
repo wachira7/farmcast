@@ -7,7 +7,6 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
   const lat = searchParams.get("lat")
   const lon = searchParams.get("lon")
-  const days = searchParams.get("days") ?? "7"
 
   if (!lat || !lon) {
     return NextResponse.json({ error: "lat and lon are required" }, { status: 400 })
@@ -15,7 +14,7 @@ export async function GET(req: NextRequest) {
 
   let res: Response
   try {
-    res = await fetch(`${WAI_BASE}/v1/weather?lat=${lat}&lon=${lon}&days=${days}&ai=true&units=metric`, {
+    res = await fetch(`${WAI_BASE}/v1/current?lat=${lat}&lon=${lon}&units=metric`, {
       headers: { Authorization: `Bearer ${process.env.WEATHER_AI_API_KEY}` },
       next: { revalidate: 300 },
     })
@@ -26,7 +25,7 @@ export async function GET(req: NextRequest) {
   const body = await res.json()
   if (!res.ok) {
     const err = parseApiError(res.status, body, res.headers)
-    return NextResponse.json({ error: err.message, code: err.code, retryAfter: err.retryAfter }, { status: res.status })
+    return NextResponse.json({ error: err.message, code: err.code }, { status: res.status })
   }
   return NextResponse.json(body)
 }

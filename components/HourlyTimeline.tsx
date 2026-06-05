@@ -1,16 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ReferenceLine,
-} from "recharts"
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from "recharts"
 import type { HourlyForecast } from "@/types/weather"
 import { hourLabel, wmoLabel } from "@/lib/utils"
 
