@@ -150,4 +150,4 @@ WEATHER_AI_API_KEY=wai_your_key_here
 
 The app is deployed on Vercel. Set `WEATHER_AI_API_KEY` as an environment variable in your Vercel project settings before deploying.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
+

@@ -14,7 +14,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "FarmCast — Agroforestry Weather Dashboard",
-  description: "Real-time weather intelligence for Kenyan farmers, powered by Weather-AI",
+  description: "Hyper-local weather intelligence and canopy analysis for Kenyan agroforestry farmers, powered by Weather-AI.",
+  keywords: ["weather", "farming", "Kenya", "agroforestry", "forecast", "canopy analysis"],
+  authors: [{ name: "Emmanuel Warutere" }],
+  openGraph: {
+    title: "FarmCast — Agroforestry Weather Dashboard",
+    description: "Hyper-local weather intelligence and canopy analysis for Kenyan agroforestry farmers.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
