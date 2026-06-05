@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useSyncExternalStore } from "react"
 import { useRouter } from "next/navigation"
 import { Search, MapPin, Leaf, CloudRain, TreePine, Loader2, Navigation } from "lucide-react"
 import OnboardingWizard from "@/components/OnboardingWizard"
-import { getProfile, type FarmerProfile } from "@/lib/profile"
+import { getProfile, subscribeProfile, clearProfile } from "@/lib/profile"
 import { getWeatherGeo } from "@/lib/weather-api"
 import type { GeoWeatherResponse } from "@/types/weather"
 import { formatTemp, wmoLabel } from "@/lib/utils"
@@ -23,13 +23,14 @@ export default function LandingPage() {
   const [query, setQuery] = useState("")
   const [geocoding, setGeocoding] = useState(false)
   const [geoError, setGeoError] = useState<string | null>(null)
-  const [profile, setProfile] = useState<FarmerProfile | null>(null)
-  const [profileChecked, setProfileChecked] = useState(false)
+  // useSyncExternalStore: server snapshot = null, client snapshot = localStorage
+  // Avoids both the hydration mismatch and the setState-in-effect lint error
+  const profile = useSyncExternalStore(subscribeProfile, getProfile, () => null)
+  // profileChecked: false on server, true on client — noop subscribe since it never changes
+  const profileChecked = useSyncExternalStore(() => () => {}, () => true, () => false)
   const [geoWeather, setGeoWeather] = useState<GeoWeatherResponse | null>(null)
 
   useEffect(() => {
-    setProfile(getProfile())
-    setProfileChecked(true)
     getWeatherGeo().then(setGeoWeather).catch(() => {})
   }, [])
 
@@ -76,7 +77,7 @@ export default function LandingPage() {
     <>
       {/* Show onboarding only after we've checked localStorage (avoids flash) */}
       {profileChecked && !profile && (
-        <OnboardingWizard onComplete={(p) => setProfile(p)} />
+        <OnboardingWizard onComplete={() => {}} />
       )}
 
       {/* Full-viewport background — fixed so it always covers the whole screen */}
@@ -209,7 +210,7 @@ export default function LandingPage() {
         {/* Profile reset link */}
         {profile && (
           <button
-            onClick={() => { localStorage.removeItem("farmcast_profile"); setProfile(null) }}
+            onClick={() => clearProfile()}
             className="mt-8 text-xs text-zinc-300 hover:text-zinc-500 dark:text-zinc-700"
           >
             Not {profile.name}? Reset profile
