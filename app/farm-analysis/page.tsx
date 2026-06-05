@@ -25,7 +25,7 @@ function FarmAnalysisContent() {
   }, [])
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6 px-4 py-6">
+    <div className="mx-auto w-full max-w-5xl space-y-6 px-4 py-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link

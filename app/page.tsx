@@ -79,9 +79,26 @@ export default function LandingPage() {
         <OnboardingWizard onComplete={(p) => setProfile(p)} />
       )}
 
-      <main className="flex flex-1 flex-col items-center justify-center px-6 py-20">
+      {/* Full-viewport background — fixed so it always covers the whole screen */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="blob absolute -top-64 -left-64 h-[600px] w-[600px] rounded-full bg-emerald-500/10 blur-3xl" />
+        <div className="blob-2 absolute top-1/3 -right-64 h-[500px] w-[500px] rounded-full bg-teal-400/10 blur-3xl" />
+        <div className="blob-3 absolute -bottom-48 left-1/3 h-[450px] w-[450px] rounded-full bg-emerald-600/10 blur-3xl" />
+        <div className="blob absolute top-2/3 -left-32 h-64 w-64 rounded-full bg-teal-600/10 blur-2xl" />
+        {/* Dot grid */}
+        <svg className="absolute inset-0 h-full w-full opacity-[0.035]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.5" fill="currentColor" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dots)" />
+        </svg>
+      </div>
+
+      <main className="flex flex-1 flex-col items-center justify-center px-6 py-20 w-full max-w-3xl mx-auto">
         {/* Hero */}
-        <div className="mb-10 flex flex-col items-center text-center">
+        <div className="fade-up mb-10 flex flex-col items-center text-center">
           <div className="mb-4 flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-1.5 text-sm font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
             <Leaf className="h-3.5 w-3.5" />
             Powered by Weather-AI
@@ -119,7 +136,7 @@ export default function LandingPage() {
         </div>
 
         {/* Search */}
-        <form onSubmit={handleSearch} className="w-full max-w-lg">
+        <form onSubmit={handleSearch} className="fade-up-1 w-full">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
@@ -153,9 +170,9 @@ export default function LandingPage() {
         </button>
 
         {/* Quick locations */}
-        <div className="mt-10 w-full max-w-lg">
+        <div className="fade-up-2 mt-10 w-full">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">Quick access</p>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
             {QUICK_LOCATIONS.map((loc) => (
               <button
                 key={loc.name}
@@ -177,7 +194,7 @@ export default function LandingPage() {
         </div>
 
         {/* Feature pills */}
-        <div className="mt-14 flex flex-wrap justify-center gap-3 text-xs text-zinc-500">
+        <div className="fade-up-3 mt-14 flex flex-wrap justify-center gap-3 text-xs text-zinc-500">
           <span className="flex items-center gap-1.5 rounded-full border border-zinc-200 px-3 py-1 dark:border-zinc-800">
             <CloudRain className="h-3 w-3 text-blue-400" /> 7-day forecast
           </span>

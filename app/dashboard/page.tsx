@@ -129,7 +129,8 @@ function DashboardContent() {
   if (error) return <ErrorScreen error={error} onRetry={load} />
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-5 px-4 py-6">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 space-y-5">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-emerald-600">
           <ArrowLeft className="h-4 w-4" /> Back
@@ -142,19 +143,29 @@ function DashboardContent() {
         </Link>
       </div>
 
-      {weather && <WeatherCard data={weather} locationName={name} />}
+      {/* Two-column grid on large screens */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
 
-      {weather?.daily && weather.daily.length > 0 && (
-        <ForecastChart daily={weather.daily} />
-      )}
+        {/* Left column — main content (2/3 width) */}
+        <div className="flex flex-col gap-5 lg:col-span-2">
+          {weather && <WeatherCard data={weather} locationName={name} />}
 
-      {weather?.hourly && weather.hourly.length > 0 && (
-        <HourlyTimeline hourly={weather.hourly} />
-      )}
+          {weather?.daily && weather.daily.length > 0 && (
+            <ForecastChart daily={weather.daily} />
+          )}
 
-      <NearbyConditions lat={parseFloat(lat!)} lon={parseFloat(lon!)} />
+          {weather?.hourly && weather.hourly.length > 0 && (
+            <HourlyTimeline hourly={weather.hourly} />
+          )}
+        </div>
 
-      {usage && <UsageQuota data={usage} />}
+        {/* Right column — sidebar (1/3 width) */}
+        <div className="flex flex-col gap-5">
+          <NearbyConditions lat={parseFloat(lat!)} lon={parseFloat(lon!)} />
+          {usage && <UsageQuota data={usage} />}
+        </div>
+
+      </div>
     </div>
   )
 }
